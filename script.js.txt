@@ -1,0 +1,131 @@
+// --- 1. DONNÉES DU JEU (Ajoutez/Modifiez uniquement ici pour ajouter des niveaux) ---
+const levels = [
+    {
+        // Niveau 1 : Pâquerette
+        id: 1,
+        title: "Niveau 1 : Nommez cette Fleur !",
+        instruction: "Regardez attentivement l'image. Quel est le nom commun de cette plante ? Écrivez-le sans aide extérieure.",
+        imageSrc: "images/paquerette.jpg", // L'image DOIT être dans le dossier /images/
+        correctAnswer: "Pâquerette",
+        info: {
+            scientific: "Bellis perennis",
+            family: "Astéracées",
+            funFact: "La Pâquerette est comestible ! On peut utiliser ses jeunes feuilles dans les salades et ses boutons floraux comme des câpres.",
+            habitat: "Pelouses, prés, bords de chemins."
+        }
+    },
+    {
+        // Niveau 2 : Ortie
+        id: 2,
+        title: "Niveau 2 : Qui Suis-Je ?",
+        instruction: "Attention, cette plante est connue pour ses piquants ! Quel est son nom commun ? Écrivez-le sans tricher.",
+        imageSrc: "images/ortie.jpg", // L'image DOIT être dans le dossier /images/
+        correctAnswer: "Ortie",
+        info: {
+            scientific: "Urtica dioica",
+            family: "Urticacées",
+            funFact: "Malgré ses poils urticants, l'ortie est un super-aliment ! Riche en fer, vitamines A et C. On la consomme cuite (soupes, tartes) ou en tisane.",
+            habitat: "Lieux riches en azote (décombres, lisières de forêt)."
+        }
+    }
+    // Ajoutez de nouveaux objets de niveau ici ! 
+];
+
+let currentLevelIndex = 0;
+
+// --- 2. FONCTIONS D'AFFICHAGE ET DE TRANSITION ---
+
+function loadLevel(levelData) {
+    const container = document.getElementById('game-container');
+    
+    // Texte du bouton: "Passer au Nv X" ou "Finir le Jeu"
+    const nextButtonText = (levelData.id < levels.length) 
+        ? `Passer au Niveau ${levelData.id + 1}` 
+        : `Finir le Jeu`; 
+
+    // Injection de la structure HTML du niveau
+    container.innerHTML = `
+        <h2>${levelData.title}</h2>
+        <img src="${levelData.imageSrc}" alt="Plante à identifier" class="plant-image">
+        
+        <div id="interaction-area">
+            <p>${levelData.instruction}</p>
+            <input type="text" id="plant-guess" placeholder="Entrez le nom de la plante">
+            <button id="validate-btn">Valider</button>
+            <div id="message"></div>
+        </div>
+
+        <div id="info-area">
+            <h3>✨ Les Secrets de la Plante ✨</h3>
+            <p><strong>Nom Scientifique :</strong> ${levelData.info.scientific}</p>
+            <p><strong>Famille :</strong> ${levelData.info.family}</p>
+            <p><strong>Le Saviez-vous ?</strong> ${levelData.info.funFact}</p>
+            <p><strong>Habitat/Usage :</strong> ${levelData.info.habitat}</p>
+            <button id="next-btn" class="next-level-button">${nextButtonText}</button>
+        </div>
+    `;
+
+    // Attacher l'événement au bouton de validation
+    document.getElementById('validate-btn').addEventListener('click', checkAnswer);
+}
+
+function displayInfo() {
+    const infoArea = document.getElementById('info-area');
+    infoArea.style.display = 'block';
+    setTimeout(() => {
+        infoArea.style.opacity = '1';
+    }, 10);
+    
+    // Gestion de la transition d'interface
+    document.getElementById('interaction-area').style.display = 'none';
+    document.getElementById('next-btn').addEventListener('click', nextLevel);
+}
+
+// --- 3. LOGIQUE DE VÉRIFICATION ---
+
+function checkAnswer() {
+    const input = document.getElementById('plant-guess');
+    const message = document.getElementById('message');
+    
+    // Normalisation pour rendre la réponse tolérante aux majuscules/minuscules/accents
+    const normalize = (text) => text.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    const userGuess = normalize(input.value); 
+    const correctAnswer = normalize(levels[currentLevelIndex].correctAnswer);
+
+    if (userGuess === correctAnswer) {
+        message.style.color = 'green';
+        message.innerHTML = `🏆 Bravo, c'est l'**${levels[currentLevelIndex].correctAnswer}** !`;
+        // Verrouiller la saisie
+        input.disabled = true; 
+        document.getElementById('validate-btn').disabled = true;
+        displayInfo();
+    } else {
+        message.style.color = '#CC0000';
+        message.innerHTML = "🤔 Pas tout à fait. Essayez de nouveau !";
+    }
+}
+
+function nextLevel() {
+    // Si ce n'est pas le dernier niveau
+    if (currentLevelIndex < levels.length - 1) {
+        currentLevelIndex++;
+        loadLevel(levels[currentLevelIndex]);
+    } else {
+        // Fin du jeu
+        document.getElementById('game-container').innerHTML = `
+            <h2>Félicitations ! 🎉 Vous êtes un Maître Botaniste.</h2>
+            <p>Le jardin n'a plus de secrets pour vous. Merci d'avoir joué !</p>
+            <button onclick="currentLevelIndex = 0; loadLevel(levels[0]);">Recommencer l'aventure</button>
+        `;
+    }
+}
+
+// --- 4. INITIALISATION (Démarrage du jeu) ---
+document.addEventListener('DOMContentLoaded', () => {
+    if (levels.length > 0) {
+        loadLevel(levels[currentLevelIndex]);
+    } else {
+        document.getElementById('game-container').innerHTML = "<p>Erreur : Aucune donnée de niveau trouvée. Le jeu ne peut pas démarrer.</p>";
+    }
+});
