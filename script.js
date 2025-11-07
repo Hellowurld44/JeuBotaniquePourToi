@@ -3,10 +3,10 @@ const levels = [
     {
         // Niveau 1 : Pâquerette
         id: 1,
-        title: "Niveau 1 : Nommez cette Fleur !",
-        instruction: "Regardez attentivement l'image. Quel est le nom commun de cette plante ? Écrivez-le sans aide extérieure.",
+        title: "Comment je m'appelle ..?",
+        instruction: "Regarde cette image.. Elle ne te rapelle rien ? Et sans regarder sur internet !",
         imageSrc: "images/paquerette.jpg", // L'image DOIT être dans le dossier /images/
-        correctAnswer: "Pâquerette",
+        correctAnswer: "Pâquerette", 
         info: {
             scientific: "Bellis perennis",
             family: "Astéracées",
@@ -28,7 +28,20 @@ const levels = [
             habitat: "Lieux riches en azote (décombres, lisières de forêt)."
         }
     }
-    // Ajoutez de nouveaux objets de niveau ici ! 
+    {
+        // Niveau X : NomCommun
+        id: X, // Assurez-vous que l'ID est unique
+        title: "Titre du Niveau X",
+        instruction: "Instruction claire et concise pour l'utilisateur.",
+        imageSrc: "images/nom_du_fichier.jpg", // L'image DOIT être dans le dossier /images/
+        correctAnswer: "NomCommun", // La réponse exacte attendue
+        info: {
+            scientific: "Nomus scientificus",
+            family: "Familius",
+            funFact: "Le fait le plus surprenant et amusant sur cette plante.",
+            habitat: "Où cette plante est-elle couramment trouvée ?"
+        }
+    }
 ];
 
 let currentLevelIndex = 0;
@@ -129,3 +142,4 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('game-container').innerHTML = "<p>Erreur : Aucune donnée de niveau trouvée. Le jeu ne peut pas démarrer.</p>";
     }
 });
+
